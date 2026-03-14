@@ -1,12 +1,14 @@
 {
-  "name": "nexus-docs-ai",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+	"name": "nexus-docs-ai",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Full-stack RAG platform for Notion with AI",
+	"scripts": {
+		"dev": "pnpm -r --parallel dev",
+		"build": "pnpm -r build",
+		"install:all": "pnpm install"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC"
 }
