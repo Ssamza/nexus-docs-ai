@@ -5,3 +5,6 @@ dist
 .env
 *.log
 pnpm-debug.log*
+
+# Source documents (processed via RAG, not versioned)
+legal-docs/

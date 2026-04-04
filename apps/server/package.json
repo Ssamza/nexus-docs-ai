@@ -6,18 +6,36 @@
 	"scripts": {
 		"dev": "nodemon --exec ts-node src/index.ts",
 		"build": "tsc",
-		"start": "node dist/index.js"
+		"start": "node dist/index.js",
+		"ingest-legal": "ts-node --transpile-only --project tsconfig.json ../../scripts/ingest-legal.ts"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"express": "^5.2.1"
+		"@anthropic-ai/sdk": "^0.82.0",
+		"@aws-sdk/client-s3": "^3.1023.0",
+		"@aws-sdk/s3-request-presigner": "^3.1023.0",
+		"@clerk/express": "^2.0.8",
+		"@prisma/adapter-pg": "^7.6.0",
+		"@prisma/client": "^7.5.0",
+		"cors": "^2.8.6",
+		"dotenv": "^17.4.0",
+		"express": "^5.2.1",
+		"multer": "^2.1.1",
+		"pdf-parse": "1.1.1",
+		"pg": "^8.20.0",
+		"voyageai": "^0.2.1"
 	},
 	"devDependencies": {
+		"@types/cors": "^2.8.19",
 		"@types/express": "^5.0.6",
+		"@types/multer": "^2.1.0",
 		"@types/node": "^25.5.0",
+		"@types/pdf-parse": "^1.1.5",
+		"@types/pg": "^8.20.0",
 		"nodemon": "^3.1.14",
+		"prisma": "^7.5.0",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.9.3"
 	}

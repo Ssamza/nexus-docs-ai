@@ -1,0 +1,108 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [pgvector(map: "vector")]
+}
+
+enum Plan {
+  FREE
+  REGISTERED
+  PREMIUM
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+}
+
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  name      String?
+  plan      Plan     @default(FREE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  documents     Document[]
+  conversations Conversation[]
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  userId    String?
+  anonId    String?
+  title     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@index([userId])
+  @@index([anonId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  role           MessageRole
+  content        String
+  createdAt      DateTime     @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([conversationId, role, createdAt])
+}
+
+model Document {
+  id               String   @id @default(cuid())
+  userId           String?
+  anonId           String?
+  title            String
+  content          String
+  fileKey          String?
+  fileSize         Int?
+  mimeType         String?
+  isPublicKnowledge Boolean  @default(false)
+  lastSyncedAt     DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user   User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chunks DocumentChunk[]
+
+  @@index([userId])
+  @@index([anonId])
+  @@index([isPublicKnowledge])
+}
+
+model QueryCache {
+  id        String                      @id @default(cuid())
+  query     String
+  answer    String
+  embedding Unsupported("vector(512)")?
+  hitCount  Int                         @default(0)
+  createdAt DateTime                    @default(now())
+  updatedAt DateTime                    @updatedAt
+}
+
+model DocumentChunk {
+  id         String                       @id @default(cuid())
+  documentId String
+  content    String
+  embedding  Unsupported("vector(512)")?
+  chunkIndex Int
+  pageNumber Int?
+  createdAt  DateTime                     @default(now())
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+}

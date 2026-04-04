@@ -1,0 +1,66 @@
+{
+  "app": {
+    "name": "NexusDocs AI",
+    "tagline": "Recibe respuestas basadas en la ley colombiana.",
+    "hook": "Tu asesor laboral y tributario, disponible 24/7 sin costo."
+  },
+  "landing": {
+    "cta_primary": "Comenzar gratis",
+    "cta_secondary": "Iniciar sesión",
+    "footer": "Gratis para empezar · Sin tarjeta de crédito",
+    "features": [
+      "Conoce tus derechos laborales",
+      "Entiende tu declaración de renta",
+      "Analiza tus contratos y liquidaciones",
+      "Basado en el Código Sustantivo del Trabajo y la DIAN"
+    ],
+    "how_it_works": [
+      {
+        "step": "01",
+        "title": "Sube tu PDF",
+        "description": "Contratos, colillas de pago, certificados de ingresos — cualquier documento laboral o tributario."
+      },
+      {
+        "step": "02",
+        "title": "Haz tu pregunta",
+        "description": "En lenguaje natural, sin tecnicismos. Pregunta como si le hablaras a un asesor."
+      },
+      {
+        "step": "03",
+        "title": "Respuesta inmediata",
+        "description": "Basada en tu documento y en la ley colombiana vigente. Clara, precisa y sin rodeos."
+      }
+    ]
+  },
+  "dashboard": {
+    "title": "Tu asesor laboral y tributario",
+    "subtitle": "Sube tus documentos y haz preguntas basadas en la ley colombiana.",
+    "upload": {
+      "title": "Subir documento",
+      "description": "Sube contratos, certificados de ingresos, colillas de pago."
+    },
+    "query": {
+      "title": "Hacer una pregunta",
+      "description": "Pregunta sobre tus derechos laborales, liquidaciones e impuestos.",
+      "placeholder": "¿Qué quieres saber?"
+    }
+  },
+  "nav": {
+    "dashboard": "Inicio",
+    "documents": "Mis documentos",
+    "settings": "Configuración"
+  },
+  "documents": {
+    "title": "Mis documentos",
+    "empty": "Aún no tienes documentos subidos.",
+    "upload_button": "Subir documento",
+    "delete": "Eliminar",
+    "download": "Descargar"
+  },
+  "errors": {
+    "file_too_large": "El archivo supera el límite permitido por tu plan.",
+    "limit_reached": "Alcanzaste el límite de documentos de tu plan.",
+    "only_pdf": "Solo se admiten archivos PDF por ahora.",
+    "generic": "Ocurrió un error. Intenta de nuevo."
+  }
+}

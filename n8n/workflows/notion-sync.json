@@ -1,0 +1,97 @@
+{
+  "name": "NexusDocs — Notion Page Sync",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "resource": "block",
+        "operation": "getAll",
+        "blockId": "={{ $json.notionPageId }}",
+        "returnAll": true
+      },
+      "id": "notion-get-blocks",
+      "name": "Get Notion Page Blocks",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "credentials": {
+        "notionApi": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract plain text from Notion blocks\nconst blocks = $input.all();\nlet content = '';\n\nfor (const block of blocks) {\n  const b = block.json;\n  const type = b.type;\n  const richText = b[type]?.rich_text || [];\n  const text = richText.map(t => t.plain_text).join('');\n  if (text) content += text + '\\n\\n';\n}\n\nreturn [{\n  json: {\n    notionPageId: $('Set Page Info').item.json.notionPageId,\n    userId: $('Set Page Info').item.json.userId,\n    notionConnectionId: $('Set Page Info').item.json.notionConnectionId,\n    title: $('Set Page Info').item.json.title,\n    content: content.trim()\n  }\n}];"
+      },
+      "id": "extract-text",
+      "name": "Extract Text from Blocks",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:3001/api/ingest/document",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "userId", "value": "={{ $json.userId }}" },
+            { "name": "notionConnectionId", "value": "={{ $json.notionConnectionId }}" },
+            { "name": "notionPageId", "value": "={{ $json.notionPageId }}" },
+            { "name": "title", "value": "={{ $json.title }}" },
+            { "name": "content", "value": "={{ $json.content }}" }
+          ]
+        }
+      },
+      "id": "ingest-document",
+      "name": "Ingest into NexusDocs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "name": "notionPageId", "value": "REPLACE_WITH_NOTION_PAGE_ID", "type": "string" },
+            { "name": "userId", "value": "REPLACE_WITH_USER_ID", "type": "string" },
+            { "name": "notionConnectionId", "value": "REPLACE_WITH_CONNECTION_ID", "type": "string" },
+            { "name": "title", "value": "REPLACE_WITH_PAGE_TITLE", "type": "string" }
+          ]
+        }
+      },
+      "id": "set-page-info",
+      "name": "Set Page Info",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [240, 480]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [[{ "node": "Set Page Info", "type": "main", "index": 0 }]]
+    },
+    "Set Page Info": {
+      "main": [[{ "node": "Get Notion Page Blocks", "type": "main", "index": 0 }]]
+    },
+    "Get Notion Page Blocks": {
+      "main": [[{ "node": "Extract Text from Blocks", "type": "main", "index": 0 }]]
+    },
+    "Extract Text from Blocks": {
+      "main": [[{ "node": "Ingest into NexusDocs", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
