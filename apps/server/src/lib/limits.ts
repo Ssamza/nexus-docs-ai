@@ -6,25 +6,19 @@ export const PLAN_LIMITS = {
   ANONYMOUS: {
     maxDocuments: IS_DEV ? 500 : 1,
     maxFileSizeBytes: IS_DEV ? 500 * 1024 * 1024 : 5 * 1024 * 1024,
-    maxQuestionsPerDay: IS_DEV ? 500 : 5,
-    ocrEnabled: false,
-  },
-  [Plan.FREE]: {
-    maxDocuments: IS_DEV ? 500 : 5,
-    maxFileSizeBytes: IS_DEV ? 500 * 1024 * 1024 : 20 * 1024 * 1024,
-    maxQuestionsPerDay: IS_DEV ? 500 : 20,
-    ocrEnabled: false,
+    maxQuestionsPerDay: IS_DEV ? 5 : 10,
+    scannedOcrEnabled: false, // OCR for image-based scanned PDFs (requires Vision API)
   },
   [Plan.REGISTERED]: {
     maxDocuments: IS_DEV ? 500 : 5,
     maxFileSizeBytes: IS_DEV ? 500 * 1024 * 1024 : 20 * 1024 * 1024,
-    maxQuestionsPerDay: IS_DEV ? 500 : 20,
-    ocrEnabled: false,
+    maxQuestionsPerDay: IS_DEV ? 10 : 25,
+    scannedOcrEnabled: false,
   },
   [Plan.PREMIUM]: {
     maxDocuments: Infinity,
     maxFileSizeBytes: 50 * 1024 * 1024,
     maxQuestionsPerDay: Infinity,
-    ocrEnabled: true,
+    scannedOcrEnabled: true,
   },
 } as const;

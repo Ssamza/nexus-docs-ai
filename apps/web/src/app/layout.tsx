@@ -25,7 +25,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider localization={{
+    <ClerkProvider
+      signInForceRedirectUrl="/dashboard"
+      signUpForceRedirectUrl="/dashboard"
+      localization={{
       ...esES,
       signIn: {
         ...esES.signIn,
@@ -42,7 +45,8 @@ export default function RootLayout({
           subtitle: "para continuar en NexusDocs AI",
         },
       },
-    }}>
+    }
+    }>
       <html lang="es">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           {children}

@@ -91,7 +91,7 @@ export function DocumentUpload({ onSuccess }: { onSuccess?: () => void }) {
             <p className="text-sm text-zinc-300">
               {isDragActive ? "Suelta el archivo aquí" : t.dashboard.upload.description}
             </p>
-            <p className="text-xs text-zinc-600">Solo PDF · Máx 5MB en plan gratuito</p>
+            <p className="text-xs text-zinc-600">Solo PDF · Máx 5MB sin cuenta · 20MB con cuenta</p>
           </div>
         )}
       </div>

@@ -2,12 +2,16 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 
+if (!process.env.MINIO_ROOT_USER || !process.env.MINIO_ROOT_PASSWORD) {
+  throw new Error("MINIO_ROOT_USER and MINIO_ROOT_PASSWORD environment variables must be set");
+}
+
 export const s3 = new S3Client({
   endpoint: process.env.MINIO_ENDPOINT || "http://localhost:9000",
   region: "us-east-1",
   credentials: {
-    accessKeyId: process.env.MINIO_ROOT_USER || "nexus_admin",
-    secretAccessKey: process.env.MINIO_ROOT_PASSWORD || "nexus_minio_pass",
+    accessKeyId: process.env.MINIO_ROOT_USER,
+    secretAccessKey: process.env.MINIO_ROOT_PASSWORD,
   },
   forcePathStyle: true, // required for MinIO
 });

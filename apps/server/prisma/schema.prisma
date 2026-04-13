@@ -10,7 +10,6 @@ datasource db {
 }
 
 enum Plan {
-  FREE
   REGISTERED
   PREMIUM
 }
@@ -25,7 +24,7 @@ model User {
   clerkId   String   @unique
   email     String   @unique
   name      String?
-  plan      Plan     @default(FREE)
+  plan      Plan     @default(REGISTERED)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

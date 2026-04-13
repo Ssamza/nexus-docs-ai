@@ -8,8 +8,8 @@ import { MessageRole } from "../generated/prisma/client";
 
 const router: ExpressRouter = Router();
 
-// Minimum similarity to include a chunk as context
-const SIMILARITY_THRESHOLD = 0.65;
+// Minimum similarity for public legal knowledge base
+const SIMILARITY_THRESHOLD = 0.60;
 // Semantic cache: queries with cosine similarity above this are considered the same question
 const CACHE_HIT_THRESHOLD = 0.95;
 // Max messages to include as conversation history
@@ -21,8 +21,20 @@ router.post("/", resolveIdentity, async (req: Request, res: Response) => {
   const limits = (req as any).limits;
   const { query, conversationId } = req.body;
 
-  if (!query) {
+  if (!query || typeof query !== "string" || query.trim().length === 0) {
     res.status(400).json({ error: "Missing query" });
+    return;
+  }
+
+  if (query.length > 2000) {
+    res.status(400).json({ error: "La pregunta no puede superar los 2000 caracteres" });
+    return;
+  }
+
+  // Accept both UUID and cuid formats (Prisma uses cuid by default)
+  const SAFE_ID_RE = /^[a-zA-Z0-9_-]{1,64}$/;
+  if (conversationId && !SAFE_ID_RE.test(conversationId)) {
+    res.status(400).json({ error: "Invalid conversationId" });
     return;
   }
 
@@ -136,29 +148,46 @@ router.post("/", resolveIdentity, async (req: Request, res: Response) => {
     content: m.content,
   }));
 
-  // Vector search with similarity filter
-  const rawChunks = user
-    ? await prisma.$queryRaw<{ id: string; content: string; documentId: string; similarity: number }[]>`
-        SELECT dc.id, dc.content, dc."documentId",
-          1 - (dc.embedding <=> ${vectorStr}::vector) AS similarity
-        FROM "DocumentChunk" dc
-        JOIN "Document" d ON d.id = dc."documentId"
-        WHERE d."isPublicKnowledge" = true OR d."userId" = ${user.id}
-        ORDER BY dc.embedding <=> ${vectorStr}::vector
-        LIMIT 6
-      `
-    : await prisma.$queryRaw<{ id: string; content: string; documentId: string; similarity: number }[]>`
-        SELECT dc.id, dc.content, dc."documentId",
-          1 - (dc.embedding <=> ${vectorStr}::vector) AS similarity
-        FROM "DocumentChunk" dc
-        JOIN "Document" d ON d.id = dc."documentId"
-        WHERE d."isPublicKnowledge" = true OR d."anonId" = ${anonId}
-        ORDER BY dc.embedding <=> ${vectorStr}::vector
-        LIMIT 6
-      `;
+  type ChunkRow = { id: string; content: string; documentId: string; similarity: number };
 
-  // Filter out chunks below the similarity threshold
-  const chunks = rawChunks.filter((c) => Number(c.similarity) >= SIMILARITY_THRESHOLD);
+  // Legal knowledge base — filtered by similarity threshold
+  const legalChunks = await prisma.$queryRaw<ChunkRow[]>`
+    SELECT dc.id, dc.content, dc."documentId",
+      1 - (dc.embedding <=> ${vectorStr}::vector) AS similarity
+    FROM "DocumentChunk" dc
+    JOIN "Document" d ON d.id = dc."documentId"
+    WHERE d."isPublicKnowledge" = true
+      AND 1 - (dc.embedding <=> ${vectorStr}::vector) >= ${SIMILARITY_THRESHOLD}
+    ORDER BY dc.embedding <=> ${vectorStr}::vector
+    LIMIT 4
+  `;
+
+
+  // Personal documents — always included (user explicitly uploaded them to ask about them)
+  const personalChunks = hasPersonalDocs
+    ? user
+      ? await prisma.$queryRaw<ChunkRow[]>`
+          SELECT dc.id, dc.content, dc."documentId",
+            1 - (dc.embedding <=> ${vectorStr}::vector) AS similarity
+          FROM "DocumentChunk" dc
+          JOIN "Document" d ON d.id = dc."documentId"
+          WHERE d."userId" = ${user.id} AND d."isPublicKnowledge" = false
+          ORDER BY dc.embedding <=> ${vectorStr}::vector
+          LIMIT 4
+        `
+      : await prisma.$queryRaw<ChunkRow[]>`
+          SELECT dc.id, dc.content, dc."documentId",
+            1 - (dc.embedding <=> ${vectorStr}::vector) AS similarity
+          FROM "DocumentChunk" dc
+          JOIN "Document" d ON d.id = dc."documentId"
+          WHERE d."anonId" = ${anonId} AND d."isPublicKnowledge" = false
+          ORDER BY dc.embedding <=> ${vectorStr}::vector
+          LIMIT 4
+        `
+    : [];
+
+
+  const chunks = [...personalChunks, ...legalChunks];
 
   if (chunks.length === 0) {
     const fallback = "No encontré información relevante en los documentos disponibles para responder esa pregunta.";
@@ -184,7 +213,9 @@ router.post("/", resolveIdentity, async (req: Request, res: Response) => {
     `;
   }
 
-  res.json({ answer, sources: chunks, conversationId: conversation.id });
+  // Return only metadata — never expose raw chunk text to the client
+  const sources = chunks.map(({ id, documentId, similarity }) => ({ id, documentId, similarity }));
+  res.json({ answer, sources, conversationId: conversation.id });
 });
 
 export default router;
