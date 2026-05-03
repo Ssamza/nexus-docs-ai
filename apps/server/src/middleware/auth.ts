@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { clerkMiddleware, getAuth, clerkClient } from "@clerk/express";
 import { prisma } from "../lib/prisma";
-import { PLAN_LIMITS } from "../lib/limits";
+import { PLAN_LIMITS, ANON_LIMITS } from "../lib/limits";
 import { Plan } from "../generated/prisma/client";
 
 export const clerk: RequestHandler = clerkMiddleware({
@@ -43,7 +43,7 @@ export async function resolveIdentity(
     }
 
     (req as any).anonId = anonId;
-    (req as any).limits = PLAN_LIMITS[Plan.FREE];
+    (req as any).limits = ANON_LIMITS;
   }
 
   next();
