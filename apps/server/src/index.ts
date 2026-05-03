@@ -44,6 +44,8 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 app.listen(PORT, async () => {
-  await setupStorage();
+  if (process.env.MINIO_ENDPOINT) {
+    await setupStorage();
+  }
   console.log(`Server running at http://localhost:${PORT}`);
 });
