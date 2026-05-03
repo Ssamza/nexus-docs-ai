@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { t } from "@/lib/t";
 import { NavLink } from "@/components/LoadingBackdrop";
 import { Accordion } from "@/components/Accordion";
+import { Ticker } from "@/components/Ticker";
 
 export default async function Home() {
   const { userId } = await auth();
@@ -44,7 +45,11 @@ export default async function Home() {
         <p className="text-xs text-zinc-600">{t.landing.footer}</p>
       </div>
 
-      <div className="w-full max-w-xl mt-12">
+      <div className="w-full max-w-3xl mt-10">
+        <Ticker />
+      </div>
+
+      <div className="w-full max-w-xl mt-4">
         <Accordion items={t.landing.how_it_works} />
       </div>
     </div>

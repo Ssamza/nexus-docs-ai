@@ -8,6 +8,15 @@
     "cta_primary": "Comenzar gratis",
     "cta_secondary": "Iniciar sesión",
     "footer": "Gratis para empezar · Sin tarjeta de crédito",
+    "ticker": [
+      "+500 CONSULTAS RESUELTAS ESTE MES",
+      "RESPUESTA PROMEDIO EN MENOS DE 10 SEGUNDOS",
+      "SIN REGISTRO PARA TU PRIMERA CONSULTA",
+      "+50 DOCUMENTOS ANALIZADOS ESTA SEMANA",
+      "DISPONIBLE LOS 365 DÍAS DEL AÑO",
+      "0 PESOS PARA EMPEZAR",
+      "ACTUALIZADO CON LA NORMATIVA COLOMBIANA VIGENTE"
+    ],
     "features": [
       "Conoce tus derechos laborales",
       "Entiende tu declaración de renta",
@@ -56,6 +65,20 @@
     "upload_button": "Subir documento",
     "delete": "Eliminar",
     "download": "Descargar"
+  },
+  "usage": {
+    "title": "Uso del plan",
+    "prompts_label": "Preguntas este mes",
+    "documents_label": "Documentos subidos",
+    "resets_at": "El contador se reinicia el",
+    "upgrade_cta": "✦ Hazte Premium",
+    "unlimited": "∞",
+    "tab_label": "Uso del plan"
+  },
+  "plans": {
+    "FREE": "Free",
+    "REGISTERED": "Básico",
+    "PREMIUM": "Premium"
   },
   "errors": {
     "file_too_large": "El archivo supera el límite permitido por tu plan.",

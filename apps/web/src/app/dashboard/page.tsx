@@ -1,4 +1,4 @@
-import { UserButton } from "@clerk/nextjs";
+import { UserButtonWithUsage } from "@/components/UserButtonWithUsage";
 import { auth } from "@clerk/nextjs/server";
 import { t } from "@/lib/t";
 import { DocumentUpload } from "@/components/DocumentUpload";
@@ -24,7 +24,7 @@ export default async function Dashboard() {
         <div className="flex items-center gap-3">
           <UserPlan />
           {userId ? (
-            <UserButton />
+            <UserButtonWithUsage />
           ) : (
             <Link
               href="/sign-in"

@@ -16,7 +16,7 @@ const CACHE_HIT_THRESHOLD = 0.95;
 const HISTORY_WINDOW = 8;
 
 router.post("/", resolveIdentity, async (req: Request, res: Response) => {
-  const user = (req as any).user;
+  let user = (req as any).user;
   const anonId = (req as any).anonId;
   const limits = (req as any).limits;
   const { query, conversationId } = req.body;
@@ -38,32 +38,59 @@ router.post("/", resolveIdentity, async (req: Request, res: Response) => {
     return;
   }
 
-  // Enforce daily question limit
-  if (limits.maxQuestionsPerDay !== Infinity) {
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+  // Enforce monthly prompt limit
+  if (limits.maxPromptsPerMonth !== Infinity) {
+    const now = new Date();
 
-    const todayCount = user
-      ? await prisma.message.count({
-          where: {
-            role: MessageRole.USER,
-            createdAt: { gte: startOfDay },
-            conversation: { userId: user.id },
-          },
-        })
-      : await prisma.message.count({
-          where: {
-            role: MessageRole.USER,
-            createdAt: { gte: startOfDay },
-            conversation: { anonId },
-          },
+    if (user) {
+      const needsReset =
+        user.promptsResetAt.getMonth() !== now.getMonth() ||
+        user.promptsResetAt.getFullYear() !== now.getFullYear();
+
+      if (needsReset) {
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { promptsThisMonth: 0, promptsResetAt: now },
         });
+        (req as any).user = user;
+      }
 
-    if (todayCount >= limits.maxQuestionsPerDay) {
-      res.status(429).json({
-        error: `Límite diario alcanzado. Tu plan permite ${limits.maxQuestionsPerDay} preguntas por día.`,
+      if (user.promptsThisMonth >= limits.maxPromptsPerMonth) {
+        res.status(429).json({
+          error: `Límite mensual alcanzado. Tu plan permite ${limits.maxPromptsPerMonth} preguntas por mes.`,
+          promptsUsed: user.promptsThisMonth,
+          promptsLimit: limits.maxPromptsPerMonth,
+        });
+        return;
+      }
+    } else {
+      let anonUsage = await prisma.anonUsage.upsert({
+        where: { anonId },
+        create: { anonId, promptsThisMonth: 0, promptsResetAt: now },
+        update: {},
       });
-      return;
+
+      const needsReset =
+        anonUsage.promptsResetAt.getMonth() !== now.getMonth() ||
+        anonUsage.promptsResetAt.getFullYear() !== now.getFullYear();
+
+      if (needsReset) {
+        anonUsage = await prisma.anonUsage.update({
+          where: { anonId },
+          data: { promptsThisMonth: 0, promptsResetAt: now },
+        });
+      }
+
+      if (anonUsage.promptsThisMonth >= limits.maxPromptsPerMonth) {
+        res.status(429).json({
+          error: `Límite mensual alcanzado. Crea una cuenta gratuita para obtener más preguntas.`,
+          promptsUsed: anonUsage.promptsThisMonth,
+          promptsLimit: limits.maxPromptsPerMonth,
+        });
+        return;
+      }
+
+      (req as any).anonUsage = anonUsage;
     }
   }
 
@@ -211,6 +238,21 @@ router.post("/", resolveIdentity, async (req: Request, res: Response) => {
       INSERT INTO "QueryCache" (id, query, answer, embedding, "createdAt", "updatedAt")
       VALUES (gen_random_uuid()::text, ${query}, ${answer}, ${vectorStr}::vector, NOW(), NOW())
     `;
+  }
+
+  // Increment monthly prompt counter
+  if (limits.maxPromptsPerMonth !== Infinity) {
+    if (user) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { promptsThisMonth: { increment: 1 } },
+      });
+    } else {
+      await prisma.anonUsage.update({
+        where: { anonId },
+        data: { promptsThisMonth: { increment: 1 } },
+      });
+    }
   }
 
   // Return only metadata — never expose raw chunk text to the client

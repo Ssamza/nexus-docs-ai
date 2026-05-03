@@ -43,7 +43,7 @@ export async function resolveIdentity(
     }
 
     (req as any).anonId = anonId;
-    (req as any).limits = PLAN_LIMITS.ANONYMOUS;
+    (req as any).limits = PLAN_LIMITS[Plan.FREE];
   }
 
   next();

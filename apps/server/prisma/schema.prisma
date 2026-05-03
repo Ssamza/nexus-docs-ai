@@ -10,6 +10,7 @@ datasource db {
 }
 
 enum Plan {
+  FREE
   REGISTERED
   PREMIUM
 }
@@ -24,7 +25,9 @@ model User {
   clerkId   String   @unique
   email     String   @unique
   name      String?
-  plan      Plan     @default(REGISTERED)
+  plan      Plan     @default(FREE)
+  promptsThisMonth  Int      @default(0)
+  promptsResetAt    DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -80,6 +83,17 @@ model Document {
   @@index([userId])
   @@index([anonId])
   @@index([isPublicKnowledge])
+}
+
+model AnonUsage {
+  id               String   @id @default(cuid())
+  anonId           String   @unique
+  promptsThisMonth Int      @default(0)
+  promptsResetAt   DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([anonId])
 }
 
 model QueryCache {
