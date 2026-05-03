@@ -76,7 +76,6 @@
     "tab_label": "Uso del plan"
   },
   "plans": {
-    "FREE": "Free",
     "REGISTERED": "Básico",
     "PREMIUM": "Premium"
   },

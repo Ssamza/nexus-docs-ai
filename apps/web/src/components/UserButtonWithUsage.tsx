@@ -17,6 +17,13 @@ function UsageIcon() {
 export function UserButtonWithUsage() {
   return (
     <UserButton>
+      <UserButton.MenuItems>
+        <UserButton.Action
+          label={t.usage.tab_label}
+          labelIcon={<UsageIcon />}
+          open="usage"
+        />
+      </UserButton.MenuItems>
       <UserButton.UserProfilePage
         label={t.usage.tab_label}
         url="usage"

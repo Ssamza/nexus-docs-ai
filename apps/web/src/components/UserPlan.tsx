@@ -3,12 +3,11 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 
-type Plan = "FREE" | "REGISTERED" | "PREMIUM";
+type Plan = "REGISTERED" | "PREMIUM";
 
 const PLAN_CONFIG: Record<Plan, { label: string; classes: string }> = {
-  FREE:       { label: "Free",       classes: "bg-zinc-700 text-zinc-300" },
-  REGISTERED: { label: "Básico", classes: "bg-blue-900 text-blue-300" },
-  PREMIUM:    { label: "Premium",    classes: "bg-amber-900 text-amber-300" },
+  REGISTERED: { label: "Básico",  classes: "bg-blue-900 text-blue-300" },
+  PREMIUM:    { label: "Premium", classes: "bg-amber-900 text-amber-300" },
 };
 
 export function UserPlan() {

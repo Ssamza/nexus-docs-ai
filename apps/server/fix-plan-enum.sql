@@ -1,8 +1,0 @@
-UPDATE "User" SET plan = 'REGISTERED' WHERE plan = 'FREE';
-CREATE TYPE "Plan_new" AS ENUM ('REGISTERED', 'PREMIUM');
-ALTER TABLE "User" ALTER COLUMN "plan" DROP DEFAULT;
-ALTER TABLE "User" ALTER COLUMN "plan" TYPE "Plan_new" USING ("plan"::text::"Plan_new");
-ALTER TYPE "Plan" RENAME TO "Plan_old";
-ALTER TYPE "Plan_new" RENAME TO "Plan";
-DROP TYPE "Plan_old";
-ALTER TABLE "User" ALTER COLUMN "plan" SET DEFAULT 'REGISTERED';

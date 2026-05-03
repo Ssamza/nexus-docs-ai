@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { t } from "@/lib/t";
 
-type Plan = "FREE" | "REGISTERED" | "PREMIUM";
+type Plan = "REGISTERED" | "PREMIUM";
 
 type Usage = {
   promptsUsed: number;
@@ -22,7 +22,6 @@ type UserData = {
 };
 
 const PLAN_CLASSES: Record<Plan, string> = {
-  FREE: "bg-zinc-700 text-zinc-300",
   REGISTERED: "bg-blue-900 text-blue-300",
   PREMIUM: "bg-amber-900 text-amber-300",
 };
@@ -43,12 +42,12 @@ function UsageBar({
   return (
     <div className="space-y-1.5">
       <div className="flex justify-between text-sm">
-        <span className="text-zinc-300">{label}</span>
-        <span className={isFull ? "text-red-400 font-medium" : "text-zinc-400"}>
+        <span className="text-zinc-700">{label}</span>
+        <span className={isFull ? "text-red-500 font-medium" : "text-zinc-500"}>
           {limit === null ? `${used} / ${t.usage.unlimited}` : `${used} / ${limit}`}
         </span>
       </div>
-      <div className="h-2 rounded-full bg-zinc-700 overflow-hidden">
+      <div className="h-2 rounded-full bg-zinc-200 overflow-hidden">
         {limit !== null && (
           <div
             className={`h-full rounded-full transition-all duration-500 ${
@@ -103,7 +102,7 @@ export function UsagePanel() {
   return (
     <div className="p-1 space-y-6 min-w-[320px]">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-zinc-100">{t.usage.title}</h2>
+        <h2 className="text-base font-semibold text-zinc-900">{t.usage.title}</h2>
         <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${PLAN_CLASSES[data.plan]}`}>
           {t.plans[data.plan]}
         </span>
