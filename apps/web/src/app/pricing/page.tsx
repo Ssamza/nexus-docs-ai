@@ -15,7 +15,7 @@ const DASH = <span className="w-4 h-4 shrink-0 mt-0.5 flex items-center justify-
 const FAQS = [
   {
     q: "¿Puedo usar la herramienta sin crear una cuenta?",
-    a: "Sí. El plan Gratuito no requiere registro. Puedes hacer hasta 10 preguntas por día y subir 1 documento por sesión, sin necesidad de crear una cuenta.",
+    a: "Sí. Sin registro puedes hacer hasta 5 preguntas por mes y subir 1 documento por sesión, sin necesidad de crear una cuenta.",
   },
   {
     q: "¿Mis documentos están seguros?",
@@ -95,7 +95,7 @@ export default function PricingPage() {
             <ul className="space-y-3 text-sm text-zinc-300 flex-1">
               {[
                 [true,  "Base legal colombiana completa"],
-                [true,  "10 preguntas por día"],
+                [true,  "5 preguntas por mes"],
                 [true,  "1 documento por sesión"],
                 [false, "Historial de conversaciones"],
                 [false, "Múltiples documentos"],
@@ -128,7 +128,7 @@ export default function PricingPage() {
             <ul className="space-y-3 text-sm text-zinc-300 flex-1">
               {[
                 [true,  "Todo del plan Gratuito"],
-                [true,  "25 preguntas por día"],
+                [true,  "20 preguntas por mes"],
                 [true,  "5 documentos personales"],
                 [true,  "Historial de conversaciones"],
                 [false, "Documentos ilimitados"],
@@ -174,7 +174,7 @@ export default function PricingPage() {
             <ul className="space-y-3 text-sm text-zinc-300 flex-1">
               {[
                 [true, "Todo del plan Básico"],
-                [true, "Preguntas ilimitadas"],
+                [true, "100 preguntas por mes"],
                 [true, "Documentos ilimitados"],
                 [true, "OCR para documentos escaneados"],
                 [true, "Historial completo"],
