@@ -13,6 +13,8 @@ import userRoutes from "./routes/user";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+app.set("trust proxy", 1);
+
 app.use(helmet());
 app.use(cors({ origin: process.env.WEB_URL || "http://localhost:3000" }));
 // Limit JSON body to 1 MB — file uploads use multipart, not JSON
