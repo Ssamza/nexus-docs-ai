@@ -2,14 +2,21 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 
+const endpoint = process.env.MINIO_ENDPOINT || "http://localhost:9000";
+
+// For Backblaze B2 the region is embedded in the endpoint (e.g. s3.us-east-005.backblazeb2.com)
+// For MinIO/local we fall back to us-east-1
+const regionMatch = endpoint.match(/s3\.([^.]+\d+)\./);
+const region = regionMatch ? regionMatch[1] : "us-east-1";
+
 export const s3 = new S3Client({
-  endpoint: process.env.MINIO_ENDPOINT || "http://localhost:9000",
-  region: "us-east-1",
+  endpoint,
+  region,
   credentials: {
     accessKeyId: process.env.MINIO_ROOT_USER || "",
     secretAccessKey: process.env.MINIO_ROOT_PASSWORD || "",
   },
-  forcePathStyle: true,
+  forcePathStyle: false,
 });
 
 export const BUCKET = "nexus-documents";
